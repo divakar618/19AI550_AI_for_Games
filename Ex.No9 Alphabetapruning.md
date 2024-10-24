@@ -1,6 +1,6 @@
 # Ex.No: 9   Implementation of Alpha Beta Pruning 
 ### DATE:                                                                            
-### REGISTER NUMBER : 
+### REGISTER NUMBER : 212222240026
 ### AIM: 
 Write a Alpha beta pruning algorithm to find the optimal value of MAX Player from the given graph.
 ### Steps:
@@ -15,19 +15,53 @@ Write a Alpha beta pruning algorithm to find the optimal value of MAX Player fro
 9.  Stop the program. 
 
 ### Program:
+```python
+# Define a large negative and positive value to represent infinity
+INF = float('inf')
 
+# Alpha-Beta Pruning function
+def alpha_beta_pruning(depth, node_index, maximizing_player, values, alpha, beta):
+    # Base case: leaf node is reached
+    if depth == 3:
+        return values[node_index]
+    
+    if maximizing_player:
+        max_eval = -INF
+        # Recur for the two children of the current node
+        for i in range(2):
+            eval = alpha_beta_pruning(depth + 1, node_index * 2 + i, False, values, alpha, beta)
+            max_eval = max(max_eval, eval)
+            alpha = max(alpha, eval)
+            
+            # Prune the branch
+            if beta <= alpha:
+                break
+        return max_eval
+    else:
+        min_eval = INF
+        # Recur for the two children of the current node
+        for i in range(2):
+            eval = alpha_beta_pruning(depth + 1, node_index * 2 + i, True, values, alpha, beta)
+            min_eval = min(min_eval, eval)
+            beta = min(beta, eval)
+            
+            # Prune the branch
+            if beta <= alpha:
+                break
+        return min_eval
 
+# Driver code
+if _name_ == "_main_":
+    # This is the terminal/leaf node values of the game tree
+    values = [3, 5, 6, 9, 1, 2, 0, -1]
 
+    print("Optimal value:", alpha_beta_pruning(0, 0, True, values, -INF, INF))
 
-
-
-
-
-
-
+```
 
 ### Output:
 
+![367156348-168d6858-ef17-4a66-aa4d-27af2c110cf4](https://github.com/user-attachments/assets/0570c785-fb56-494d-87be-3a98ed9d3394)
 
 
 ### Result:
