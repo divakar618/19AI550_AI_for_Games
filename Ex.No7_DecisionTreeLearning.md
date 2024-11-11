@@ -18,52 +18,63 @@ Design a decision tree for following data.
 # Program:
 
 ```python
-# Define a large negative and positive value to represent infinity
-INF = float('inf')
 
-# Alpha-Beta Pruning function
-def alpha_beta_pruning(depth, node_index, maximizing_player, values, alpha, beta):
-    # Base case: leaf node is reached
-    if depth == 3:
-        return values[node_index]
-    
-    if maximizing_player:
-        max_eval = -INF
-        # Recur for the two children of the current node
-        for i in range(2):
-            eval = alpha_beta_pruning(depth + 1, node_index * 2 + i, False, values, alpha, beta)
-            max_eval = max(max_eval, eval)
-            alpha = max(alpha, eval)
-            
-            # Prune the branch
-            if beta <= alpha:
-                break
-        return max_eval
-    else:
-        min_eval = INF
-        # Recur for the two children of the current node
-        for i in range(2):
-            eval = alpha_beta_pruning(depth + 1, node_index * 2 + i, True, values, alpha, beta)
-            min_eval = min(min_eval, eval)
-            beta = min(beta, eval)
-            
-            # Prune the branch
-            if beta <= alpha:
-                break
-        return min_eval
+from sklearn import tree
+import pandas as pd
 
-# Driver code
-if _name_ == "_main_":
-    # This is the terminal/leaf node values of the game tree
-    values = [3, 5, 6, 9, 1, 2, 0, -1]
+# Data: [Health, Cover, Ammo, Exposed]
+# Health: 1 for Healthy, 0 for Hurt
+# Cover: 1 for In Cover, 0 for Exposed
+# Ammo: 1 for With Ammo, 0 for Empty
+# Exposed: 1 for Exposed, 0 for In Cover
+# Actions: 0 for Defend, 1 for Attack
 
-    print("Optimal value:", alpha_beta_pruning(0, 0, True, values, -INF, INF))
+# Define the training data and corresponding labels (actions)
+data = [
+    [1, 1, 1],  # Healthy, In Cover, With Ammo -> Attack
+    [0, 1, 1],  # Hurt, In Cover, With Ammo -> Attack
+    [1, 1, 0],  # Healthy, In Cover, Empty -> Defend
+    [0, 1, 0],  # Hurt, In Cover, Empty -> Defend
+    [0, 0, 1],  # Hurt, Exposed, With Ammo -> Defend
+]
+
+# Labels: 1 for Attack, 0 for Defend
+labels = [1, 1, 0, 0, 0]
+
+# Create a Decision Tree Classifier model
+clf = DecisionTreeClassifier(criterion="entropy")
+
+# Train the model
+clf.fit(data, labels)
+
+# Make predictions (example data points)
+test_data = [
+    [1, 1, 1],  # Healthy, In Cover, With Ammo
+    [0, 0, 1],  # Hurt, Exposed, With Ammo
+    [1, 1, 0],  # Healthy, In Cover, Empty
+]
+
+# Predict actions for the test data
+predictions = clf.predict(test_data)
+
+# Output the predictions
+for i, pred in enumerate(predictions):
+    action = "Attack" if pred == 1 else "Defend"
+    print(f"Test case {i+1}: Predicted action is {action}")
+
+# Optional: Visualize the decision tree
+import matplotlib.pyplot as plt
+
+plt.figure(figsize=(10, 6))
+tree.plot_tree(clf, feature_names=['Health', 'Cover', 'Ammo', 'Exposed'], class_names=['Defend', 'Attack'], filled=True)
+plt.show()
+
 ```
 
 
 # Output:
 
-![377790164-b4b37ab0-b97e-4bb6-b0eb-4aa1d66a4999](https://github.com/user-attachments/assets/7a694d25-ecb6-465d-9d6d-5de08ea5a42b)
+![373574618-dc19cf35-1fc1-4e2b-8365-0d4b9676b6cf](https://github.com/user-attachments/assets/1b2f88e1-b30c-47ac-a508-9ece75277b54)
 
 
 
